@@ -2,8 +2,20 @@
 
 import Link from "next/link";
 import { Search } from "lucide-react";
+import { useSession, signOut } from "next-auth/react";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
+import { User, ChevronDown } from "lucide-react";
 export default function Navbar() {
+  const { data: session } = useSession();
+
   return (
     <nav className="bg-[#131921] shadow-md">
       <div className="max-w-7xl mx-auto h-16 px-8 flex items-center justify-between">
@@ -11,7 +23,7 @@ export default function Navbar() {
         {/* Logo */}
         <Link
           href="/"
-          className="text-white text-3xl font-extrabold tracking-wide transition duration-300 hover:text-amber-400"
+          className="text-white text-3xl font-extrabold tracking-wide hover:text-amber-400 transition"
         >
           SEAPEDIA
         </Link>
@@ -20,35 +32,76 @@ export default function Navbar() {
         <div className="flex items-center w-[45%]">
           <input
             type="text"
-            placeholder="Search products, stores..."
+            placeholder="Search products..."
             className="w-full h-11 px-5 rounded-l-full bg-gray-100 outline-none text-black"
           />
 
-          <button
-            className="h-11 w-14 rounded-r-full bg-amber-500 hover:bg-amber-600 flex justify-center items-center transition"
-          >
+          <button className="h-11 w-14 rounded-r-full bg-amber-500 hover:bg-amber-600 flex items-center justify-center">
             <Search size={20} color="white" />
           </button>
         </div>
 
-        {/* Menu */}
-        <div className="flex items-center gap-5">
+        {/* Right Menu */}
+        {!session ? (
+          <div className="flex items-center gap-5">
+            <Link
+              href="/login"
+              className="text-white hover:text-amber-400 transition"
+            >
+              Login
+            </Link>
 
-          <Link
-            href="/login"
-            className="text-white hover:text-amber-400 transition font-medium"
-          >
-            Login
-          </Link>
+            <Link
+              href="/register"
+              className="bg-amber-500 hover:bg-amber-600 text-white px-5 py-2 rounded-full transition"
+            >
+              Register
+            </Link>
+          </div>
+        ) : (
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <button className="flex items-center gap-2 text-white hover:text-amber-400 transition">
+                <User size={20} />
+                <span className="font-medium">
+                  {session.user?.name}
+                </span>
+                <ChevronDown size={18} />
+              </button>
+            </DropdownMenuTrigger>
 
-          <Link
-            href="/register"
-            className="bg-amber-500 hover:bg-amber-600 text-white px-5 py-2 rounded-full transition font-medium"
-          >
-            Register
-          </Link>
+            <DropdownMenuContent align="end" className="w-56" >
+              <DropdownMenuLabel>
+                <div className="flex flex-col">
+                  <span className="font-semibold">
+                    {session.user?.name}
+                  </span>
 
-        </div>
+                  <span className="text-xs text-gray-500">
+                    {session.user?.roles?.[0]}
+                  </span>
+                </div>
+
+              </DropdownMenuLabel>
+
+              <DropdownMenuSeparator />
+
+                <DropdownMenuItem asChild>
+                  <Link href="/profile">
+                    My Profile
+                  </Link>
+                </DropdownMenuItem>
+
+              <DropdownMenuSeparator />
+
+              <DropdownMenuItem onClick={() => signOut({ callbackUrl: "/" })} className="text-red-500 cursor-pointer">
+                Logout
+              </DropdownMenuItem>
+
+            </DropdownMenuContent>
+
+          </DropdownMenu>
+        )}
 
       </div>
     </nav>
