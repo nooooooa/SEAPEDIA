@@ -5,7 +5,62 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 
 export default function RegisterPage() {
-  
+  const router = useRouter();
+
+  const [username, setUsername] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+
+  const [error, setError] = useState("");
+  const [success, setSuccess] = useState("");
+  const [loading, setLoading] = useState(false);
+
+  const handleRegister = async (e: React.FormEvent) => {
+  e.preventDefault();
+
+  setError("");
+  setSuccess("");
+
+  if (!username || !email || !password || !confirmPassword) {
+    setError("Please fill in all required fields.");
+    return;
+  }
+
+  if (password !== confirmPassword) {
+    setError("Passwords do not match.");
+    return;
+  }
+
+  setLoading(true);
+
+  const res = await fetch("/api/auth/register", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        username,
+        email,
+        password,
+      }),
+    });
+
+    const data = await res.json();
+
+    setLoading(false);
+
+    if (!res.ok) {
+      setError(data.message);
+      return;
+    }
+
+    setSuccess("Account created successfully!");
+
+    setTimeout(() => {
+      router.push("/login");
+    }, 1500);
+  };
   return (
     <main className="min-h-screen bg-gray-100 flex items-center justify-center px-4">
       <div className="w-full max-w-md bg-white rounded-2xl shadow-2xl p-10">
@@ -21,7 +76,7 @@ export default function RegisterPage() {
           </p>
         </div>
 
-        <form className="space-y-5">
+        <form onSubmit={handleRegister} className="space-y-5">
 
           <div>
             <label className="block mb-2 font-medium text-gray-700">
@@ -30,6 +85,8 @@ export default function RegisterPage() {
 
             <input
               type="text"
+              value={username}
+              onChange={(e) => setUsername(e.target.value)}
               placeholder="Enter your username"
               className="w-full rounded-xl border border-gray-300 px-4 py-3 focus:outline-none focus:ring-2 focus:ring-amber-500"
             />
@@ -42,6 +99,8 @@ export default function RegisterPage() {
 
             <input
               type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
               placeholder="Enter your email"
               className="w-full rounded-xl border border-gray-300 px-4 py-3 focus:outline-none focus:ring-2 focus:ring-amber-500"
             />
@@ -54,6 +113,8 @@ export default function RegisterPage() {
 
             <input
               type="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
               placeholder="Create your password"
               className="w-full rounded-xl border border-gray-300 px-4 py-3 focus:outline-none focus:ring-2 focus:ring-amber-500"
             />
@@ -66,16 +127,29 @@ export default function RegisterPage() {
 
             <input
               type="password"
+              value={confirmPassword}
+              onChange={(e) => setConfirmPassword(e.target.value)}
               placeholder="Confirm your password"
               className="w-full rounded-xl border border-gray-300 px-4 py-3 focus:outline-none focus:ring-2 focus:ring-amber-500"
             />
           </div>
+          {error && (
+            <p className="text-red-500 text-sm text-center">
+              {error}
+            </p>
+          )}
 
+          {success && (
+            <p className="text-green-600 text-sm text-center">
+              {success}
+            </p>
+          )}
           <button
             type="submit"
-            className="w-full bg-amber-500 hover:bg-amber-600 text-white font-semibold py-3 rounded-xl transition"
+            disabled={loading}
+            className="w-full bg-amber-500 hover:bg-amber-600 text-white py-3 rounded-xl disabled:opacity-60"
           >
-            Register
+            {loading ? "Creating Account..." : "Register"}
           </button>
 
         </form>
