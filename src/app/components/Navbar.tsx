@@ -1,7 +1,6 @@
 "use client";
-
+import { Search, ShoppingCart } from "lucide-react";
 import Link from "next/link";
-import { Search } from "lucide-react";
 import { useSession, signOut } from "next-auth/react";
 import {
   DropdownMenu,
@@ -43,7 +42,7 @@ export default function Navbar() {
 
         {/* Right Menu */}
         {!session ? (
-          <div className="flex items-center gap-5">
+          <div className="flex items-center gap-6 text-white">
             <Link
               href="/login"
               className="text-white hover:text-amber-400 transition"
@@ -59,18 +58,55 @@ export default function Navbar() {
             </Link>
           </div>
         ) : (
+          
+        <div className="flex items-center gap-6">
+          {/* Cart */}
+          <Link
+            href="/cart"
+            className="relative text-white hover:text-amber-400 transition"
+          >
+            <ShoppingCart size={24} />
+
+            <span
+              className="
+                absolute
+                -top-2
+                -right-2
+                bg-amber-500
+                text-xs
+                text-white
+                rounded-full
+                w-5
+                h-5
+                flex
+                items-center
+                justify-center
+                font-bold
+              "
+            >
+              0
+            </span>
+          </Link>
+
+          {/* Profile Dropdown */}
           <DropdownMenu>
+
             <DropdownMenuTrigger asChild>
               <button className="flex items-center gap-2 text-white hover:text-amber-400 transition">
                 <User size={20} />
+
                 <span className="font-medium">
                   {session.user?.name}
                 </span>
+
                 <ChevronDown size={18} />
               </button>
             </DropdownMenuTrigger>
 
-            <DropdownMenuContent align="end" className="w-56" >
+            <DropdownMenuContent
+              align="end"
+              className="w-56"
+            >
               <DropdownMenuLabel>
                 <div className="flex flex-col">
                   <span className="font-semibold">
@@ -81,26 +117,30 @@ export default function Navbar() {
                     {session.user?.roles?.[0]}
                   </span>
                 </div>
-
               </DropdownMenuLabel>
 
               <DropdownMenuSeparator />
 
-                <DropdownMenuItem asChild>
-                  <Link href="/profile">
-                    My Profile
-                  </Link>
-                </DropdownMenuItem>
+              <DropdownMenuItem asChild>
+                <Link href="/profile">
+                  My Profile
+                </Link>
+              </DropdownMenuItem>
 
               <DropdownMenuSeparator />
 
-              <DropdownMenuItem onClick={() => signOut({ callbackUrl: "/" })} className="text-red-500 cursor-pointer">
+              <DropdownMenuItem
+                onClick={() => signOut({ callbackUrl: "/" })}
+                className="text-red-500 cursor-pointer"
+              >
                 Logout
               </DropdownMenuItem>
 
             </DropdownMenuContent>
 
           </DropdownMenu>
+
+        </div>
         )}
 
       </div>
