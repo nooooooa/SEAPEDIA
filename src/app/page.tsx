@@ -21,6 +21,9 @@ export default async function Home({
           },
         }
       : {},
+    include: {
+      reviews: true,
+    },
     orderBy: {
       createdAt: "desc",
     },
@@ -52,17 +55,27 @@ export default async function Home({
             </div>
           ) : (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
-              {products.map((product) => (
-                <ProductCard
-                  key={product.id}
-                  id={product.id}
-                  name={product.name}
-                  price={product.price}
-                  image={product.image ?? "/placeholder.png"}
-                  rating={4.8}
-                  reviews={128}
-                />
-              ))}
+              {products.map((product) => {
+                const rating =
+                  product.reviews.length === 0
+                    ? 0
+                    : product.reviews.reduce(
+                        (sum, review) => sum + review.rating,
+                        0
+                      ) / product.reviews.length;
+
+                return (
+                  <ProductCard
+                    key={product.id}
+                    id={product.id}
+                    name={product.name}
+                    price={product.price}
+                    image={product.image ?? "/placeholder.png"}
+                    rating={rating}
+                    reviews={product.reviews.length}
+                  />
+                );
+              })}
             </div>
           )}
 

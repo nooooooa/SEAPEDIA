@@ -23,12 +23,7 @@ export default function ProductCard({
 }: ProductCardProps) {
   const router = useRouter();
 
-  const handleAddToCart = async (
-    e: React.MouseEvent<HTMLButtonElement>
-  ) => {
-    e.preventDefault();
-    e.stopPropagation();
-
+  const handleAddToCart = async () => {
     const res = await fetch("/api/cart/add", {
       method: "POST",
       headers: {
@@ -54,16 +49,12 @@ export default function ProductCard({
       href={`/product/${id}`}
       className="group bg-white rounded-2xl shadow hover:shadow-xl transition overflow-hidden border border-gray-200"
     >
-      {/* Image */}
-      <div className="aspect-square bg-gray-100 overflow-hidden">
-        <img
-          src={image}
-          alt={name}
-          className="w-full h-full object-cover group-hover:scale-105 transition"
-        />
-      </div>
+      <img
+        src={image}
+        alt={name}
+        className="w-full h-56 object-cover group-hover:scale-105 transition"
+      />
 
-      {/* Content */}
       <div className="p-4">
 
         <h2 className="font-semibold text-[#131921] line-clamp-2">
@@ -74,26 +65,32 @@ export default function ProductCard({
           Rp {price.toLocaleString("id-ID")}
         </p>
 
-        <div className="flex items-center gap-1 mt-2">
+        <div className="flex items-center mt-2">
+
           <Star
             size={17}
             className="fill-yellow-400 text-yellow-400"
           />
 
           <span className="text-sm font-medium">
-            {rating}
+            {reviews === 0 ? "New" : rating.toFixed(1)}
           </span>
 
           <span className="text-sm text-gray-500">
-            ({reviews})
+            ({reviews} reviews)
           </span>
 
           <button
-            onClick={handleAddToCart}
-            className="ml-auto p-2 rounded-full hover:bg-amber-100 hover:text-amber-500 transition"
+            onClick={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              handleAddToCart();
+            }}
+            className="ml-auto p-2 rounded-lg hover:bg-gray-100"
           >
             <ShoppingCart size={22} />
           </button>
+
         </div>
 
       </div>
