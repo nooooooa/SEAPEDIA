@@ -3,6 +3,7 @@ import { auth } from "@/auth";
 import { redirect } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 import CartItem from "../components/cart/CartItem";
+import CheckoutButton from "../components/cart/CheckoutButton";
 
 export default async function CartPage() {
   const session = await auth();
@@ -26,24 +27,52 @@ export default async function CartPage() {
 
   if (!cart || cart.items.length === 0) {
     return (
-      <div className="max-w-5xl mx-auto py-12 px-5">
-        <h1 className="text-3xl font-bold text-[#131921] mb-10">
-          Shopping Cart
-        </h1>
+      <div className="min-h-[70vh] flex items-center justify-center px-8">
+        <div className="text-center max-w-md">
+          {/* Empty cart illustration */}
+          <div className="mx-auto mb-8 w-24 h-24 rounded-full bg-amber-50 flex items-center justify-center">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              className="w-12 h-12 text-amber-400"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+              strokeWidth={1.5}
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                d="M2.25 3h1.386c.51 0 .955.343 1.087.835l.383 1.437M7.5 14.25a3 3 0 00-3 3h15.75m-12.75-3h11.218c1.121-2.3 2.1-4.684 2.924-7.138a60.114 60.114 0 00-16.536-1.84M7.5 14.25L5.106 5.272M6 20.25a.75.75 0 11-1.5 0 .75.75 0 011.5 0zm12.75 0a.75.75 0 11-1.5 0 .75.75 0 011.5 0z"
+              />
+            </svg>
+          </div>
 
-        <div className="bg-white rounded-2xl shadow-lg p-10 text-center">
-          <h2 className="text-2xl font-semibold text-gray-700">
+          <h1 className="text-2xl font-bold text-gray-900 mb-2">
             Your cart is empty
-          </h2>
-
-          <p className="mt-3 text-gray-500">
-            Looks like you haven't added anything yet.
+          </h1>
+          <p className="text-gray-500 mb-8 leading-relaxed">
+            Looks like you haven't added anything yet. Start exploring and find
+            something you'll love.
           </p>
 
           <Link
             href="/"
-            className="inline-block mt-8 px-8 py-3 bg-amber-500 text-white rounded-xl hover:bg-amber-600 transition"
+            className="inline-flex items-center gap-2 px-8 py-3.5 bg-amber-500 hover:bg-amber-600 text-white font-semibold rounded-xl transition-colors duration-200"
           >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              className="w-4 h-4"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+              strokeWidth={2}
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                d="M10 19l-7-7m0 0l7-7m-7 7h18"
+              />
+            </svg>
             Continue Shopping
           </Link>
         </div>
@@ -56,29 +85,77 @@ export default async function CartPage() {
     0
   );
 
-  return (
-    <div className="max-w-6xl mx-auto py-12 px-5">
-      <h1 className="text-3xl font-bold text-[#131921] mb-10">
-        Shopping Cart
-      </h1>
+  const itemCount = cart.items.reduce((sum, item) => sum + item.quantity, 0);
 
-      <div className="space-y-5">
+  return (
+    <div className="max-w-5xl mx-auto py-12 px-8">
+      {/* Header */}
+      <div className="mb-8">
+        <h1 className="text-3xl font-bold text-gray-900">Shopping Cart</h1>
+        <p className="mt-1 text-sm text-gray-500">
+          {itemCount} {itemCount === 1 ? "item" : "items"} in your cart
+        </p>
+      </div>
+
+      {/* Cart items */}
+      <div className="space-y-3">
         {cart.items.map((item) => (
-          <CartItem
-            key={item.id}
-            item={item}
-          />
+          <CartItem key={item.id} item={item} />
         ))}
       </div>
 
-      <div className="mt-8 bg-white rounded-xl shadow p-6 flex justify-between items-center">
-        <h2 className="text-2xl font-bold">
-          Total
+      {/* Divider */}
+      <div className="my-8 border-t border-gray-100" />
+
+      {/* Order summary card */}
+      <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6">
+        <h2 className="text-base font-semibold text-gray-500 uppercase tracking-wider mb-5">
+          Order Summary
         </h2>
 
-        <h2 className="text-2xl font-bold text-amber-600">
-          Rp {total.toLocaleString("id-ID")}
-        </h2>
+        <div className="space-y-3">
+          <div className="flex justify-between text-sm text-gray-600">
+            <span>Subtotal ({itemCount} items)</span>
+            <span>Rp {total.toLocaleString("id-ID")}</span>
+          </div>
+        </div>
+
+        <div className="mt-5 pt-5 border-t border-gray-100 flex items-center justify-between">
+          <div>
+            <p className="text-xs text-gray-400 uppercase tracking-wide mb-1">
+              Total
+            </p>
+            <p className="text-2xl font-bold text-gray-900">
+              Rp {total.toLocaleString("id-ID")}
+            </p>
+          </div>
+
+          <CheckoutButton />
+        </div>
+      </div>
+
+      {/* Back to shopping link */}
+      <div className="mt-6 text-center">
+        <Link
+          href="/"
+          className="inline-flex items-center gap-1.5 text-sm text-gray-400 hover:text-amber-600 transition-colors duration-200"
+        >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            className="w-4 h-4"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+            strokeWidth={2}
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              d="M10 19l-7-7m0 0l7-7m-7 7h18"
+            />
+          </svg>
+          Continue Shopping
+        </Link>
       </div>
     </div>
   );

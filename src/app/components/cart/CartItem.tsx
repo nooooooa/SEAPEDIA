@@ -56,11 +56,11 @@ export default function CartItem({ item }: CartItemProps) {
 };
 
   return (
-    <div className="bg-white rounded-xl shadow p-5 flex justify-between items-center">
+    <div className="bg-white rounded-2xl shadow p-8 flex justify-between items-center">
 
       <div>
 
-        <h2 className="text-xl font-semibold">
+        <h2 className="text-2xl font-semibold">
           {item.product.name}
         </h2>
 

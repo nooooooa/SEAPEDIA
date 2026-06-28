@@ -15,6 +15,7 @@ import {
 
 import { useEffect, useState } from "react";
 import { User, ChevronDown } from "lucide-react";
+import { useRouter, useSearchParams } from "next/navigation";
 
 export default function Navbar() {
   const { data: session } = useSession();
@@ -32,7 +33,12 @@ export default function Navbar() {
 
     loadCartCount();
   }, [session]);
+  const router = useRouter();
+  const searchParams = useSearchParams();
 
+  const [search, setSearch] = useState(
+    searchParams.get("search") ?? ""
+  );
   return (
     <nav className="bg-[#131921] shadow-md">
       <div className="max-w-7xl mx-auto h-16 px-8 flex items-center justify-between">
@@ -50,10 +56,21 @@ export default function Navbar() {
           <input
             type="text"
             placeholder="Search products..."
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
             className="w-full h-11 px-5 rounded-l-full bg-gray-100 outline-none text-black"
           />
 
-          <button className="h-11 w-14 rounded-r-full bg-amber-500 hover:bg-amber-600 flex items-center justify-center">
+          <button
+            onClick={() => {
+              if (search.trim() === "") {
+                router.push("/");
+              } else {
+                router.push(`/?search=${encodeURIComponent(search)}`);
+              }
+            }}
+            className="h-11 w-14 rounded-r-full bg-amber-500 hover:bg-amber-600 flex items-center justify-center"
+          >
             <Search size={20} color="white" />
           </button>
         </div>
