@@ -1,6 +1,6 @@
 import Navbar from "./components/Navbar";
-import ProductCard from "../components/product/ProductCard";
 import products from "../data/products";
+import ProductCard from "@/components/product/ProductCard";
 
 export default function Home() {
   return (
@@ -8,9 +8,7 @@ export default function Home() {
       <Navbar />
 
       <main className="bg-gray-100 min-h-screen">
-
         <div className="max-w-7xl mx-auto py-10 px-5">
-
           <h1 className="text-3xl font-bold text-[#131921] mb-8">
             Featured Products
           </h1>
@@ -19,13 +17,16 @@ export default function Home() {
             {products.map((product) => (
               <ProductCard
                 key={product.id}
-                {...product}
+                id={product.id}
+                name={product.name}
+                price={product.price}
+                image={product.image ?? "/placeholder.png"}
+                rating={4.8}
+                reviews={128}
               />
             ))}
           </div>
-
         </div>
-
       </main>
     </>
   );

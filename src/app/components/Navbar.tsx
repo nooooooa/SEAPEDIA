@@ -1,7 +1,9 @@
 "use client";
+
 import { Search, ShoppingCart } from "lucide-react";
 import Link from "next/link";
 import { useSession, signOut } from "next-auth/react";
+
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -11,9 +13,25 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 
+import { useEffect, useState } from "react";
 import { User, ChevronDown } from "lucide-react";
+
 export default function Navbar() {
   const { data: session } = useSession();
+  const [cartCount, setCartCount] = useState(0);
+
+  useEffect(() => {
+    async function loadCartCount() {
+      if (!session) return;
+
+      const res = await fetch("/api/cart/count");
+      const data = await res.json();
+
+      setCartCount(data.count);
+    }
+
+    loadCartCount();
+  }, [session]);
 
   return (
     <nav className="bg-[#131921] shadow-md">
@@ -84,7 +102,7 @@ export default function Navbar() {
                 font-bold
               "
             >
-              0
+              {cartCount}
             </span>
           </Link>
 

@@ -1,6 +1,6 @@
 const products = [
   {
-    id: 1,
+    id: 7,
     name: "Mechanical Keyboard RGB",
     price: 750000,
     rating: 4.8,
@@ -8,7 +8,7 @@ const products = [
     image: "https://picsum.photos/400?1",
   },
   {
-    id: 2,
+    id: 8,
     name: "Gaming Mouse Wireless",
     price: 420000,
     rating: 4.7,
@@ -16,7 +16,7 @@ const products = [
     image: "https://picsum.photos/400?2",
   },
   {
-    id: 3,
+    id: 9,
     name: "27 Inch Monitor",
     price: 2950000,
     rating: 4.9,
@@ -24,7 +24,7 @@ const products = [
     image: "https://picsum.photos/400?3",
   },
   {
-    id: 4,
+    id: 10,
     name: "USB-C Hub",
     price: 280000,
     rating: 4.5,
