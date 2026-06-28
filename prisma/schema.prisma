@@ -9,22 +9,29 @@ datasource db {
 
 model User {
   id          Int       @id @default(autoincrement())
+
   username    String    @unique
   email       String    @unique
   password    String
 
   fullName    String?
   phone       String?
-  address     String?   @db.Text
+
+  province    String?
   city        String?
+  address     String?   @db.Text
   postalCode  String?
 
   createdAt   DateTime  @default(now())
 
   products    Product[]
+
   cart        Cart?
+
   userRoles   UserRole[]
+
   orders      Order[]
+
   reviews     Review[]
 
   @@map("user")
@@ -104,6 +111,13 @@ model Order {
 
   subtotal    Float       @default(0)
 
+  receiverName String
+  phone        String
+
+  province     String
+  city         String
+  address      String @db.Text
+  postalCode   String
   shippingFee Float       @default(0)
 
   total       Float

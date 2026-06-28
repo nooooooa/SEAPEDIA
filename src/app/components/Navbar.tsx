@@ -161,7 +161,13 @@ export default function Navbar() {
                   My Profile
                 </Link>
               </DropdownMenuItem>
+              <DropdownMenuItem asChild>
+                <Link href="/orders">
+                  Order History
+                </Link>
+              </DropdownMenuItem>
 
+              <DropdownMenuSeparator />
               <DropdownMenuSeparator />
 
               <DropdownMenuItem

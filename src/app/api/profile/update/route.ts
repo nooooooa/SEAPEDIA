@@ -17,6 +17,14 @@ export async function PUT(req: Request) {
     const {
       username,
       email,
+
+      fullName,
+      phone,
+      province,
+      city,
+      address,
+      postalCode,
+
       currentPassword,
       newPassword,
       confirmPassword,
@@ -133,6 +141,13 @@ export async function PUT(req: Request) {
         username,
         email,
         password: hashedPassword,
+
+        fullName,
+        phone,
+        province,
+        city,
+        address,
+        postalCode,
       },
     });
 

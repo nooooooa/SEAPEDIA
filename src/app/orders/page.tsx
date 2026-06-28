@@ -79,6 +79,13 @@ export default async function OrdersPage() {
                   {order.items.length} Item(s)
                 </p>
 
+                <p className="text-gray-500 mt-2">
+                  {order.receiverName}
+                </p>
+
+                <p className="text-gray-500">
+                  {order.city}, {order.province}
+                </p>
               </div>
 
               <div className="text-right">

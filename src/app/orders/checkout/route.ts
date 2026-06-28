@@ -15,6 +15,39 @@ export async function POST() {
 
     const userId = Number(session.user.id);
 
+    const user = await prisma.user.findUnique({
+      where: {
+        id: userId,
+      },
+    });
+
+    if (!user) {
+      return NextResponse.json(
+        { message: "User not found." },
+        { status: 404 }
+      );
+    }
+
+    // Pastikan alamat sudah diisi
+    if (
+      !user.fullName ||
+      !user.phone ||
+      !user.province ||
+      !user.city ||
+      !user.address ||
+      !user.postalCode
+    ) {
+      return NextResponse.json(
+        {
+          message:
+            "Please complete your shipping address first.",
+        },
+        {
+          status: 400,
+        }
+      );
+    }
+
     const cart = await prisma.cart.findUnique({
       where: {
         userId,
@@ -40,7 +73,8 @@ export async function POST() {
     }
 
     const subtotal = cart.items.reduce(
-      (sum, item) => sum + item.product.price * item.quantity,
+      (sum, item) =>
+        sum + item.product.price * item.quantity,
       0
     );
 
@@ -55,7 +89,6 @@ export async function POST() {
         subtotal,
         shippingFee,
         total,
-        status: "Pending",
       },
     });
 
@@ -68,8 +101,21 @@ export async function POST() {
           price: item.product.price,
         },
       });
+
+      // Kurangi stok
+      await prisma.product.update({
+        where: {
+          id: item.productId,
+        },
+        data: {
+          stock: {
+            decrement: item.quantity,
+          },
+        },
+      });
     }
 
+    // Kosongkan cart
     await prisma.cartItem.deleteMany({
       where: {
         cartId: cart.id,
@@ -77,7 +123,7 @@ export async function POST() {
     });
 
     return NextResponse.json({
-      message: "Checkout successful.",
+      message: "Checkout success.",
     });
 
   } catch (err) {

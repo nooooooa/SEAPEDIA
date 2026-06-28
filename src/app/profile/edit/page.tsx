@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
+import { provinces, cities } from "@/data/address";
 import Link from "next/link";
 
 export default function EditProfilePage() {
@@ -17,7 +18,12 @@ export default function EditProfilePage() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
-
+  const [fullName, setFullName] = useState("");
+  const [phone, setPhone] = useState("");
+  const [province, setProvince] = useState("");
+  const [city, setCity] = useState("");
+  const [address, setAddress] = useState("");
+  const [postalCode, setPostalCode] = useState("");
   useEffect(() => {
     async function loadProfile() {
       try {
@@ -29,8 +35,12 @@ export default function EditProfilePage() {
 
         const data = await res.json();
 
-        setUsername(data.username);
-        setEmail(data.email);
+        setFullName(data.fullName ?? "");
+        setPhone(data.phone ?? "");
+        setProvince(data.province ?? "");
+        setCity(data.city ?? "");
+        setAddress(data.address ?? "");
+        setPostalCode(data.postalCode ?? "");
       } catch (err) {
         setError("Failed to load profile.");
       }
@@ -131,6 +141,96 @@ export default function EditProfilePage() {
               onChange={(e) => setEmail(e.target.value)}
               className="w-full rounded-xl border border-gray-300 px-4 py-3 focus:ring-2 focus:ring-amber-500 outline-none"
             />
+          </div>
+          <div className="space-y-5">
+            <div>
+              <label>Phone Number</label>
+
+              <input
+                value={phone}
+                onChange={(e)=>setPhone(e.target.value)}
+                className="w-full border rounded-lg p-3"
+              />
+            </div>
+
+            <div>
+
+              <label>Province</label>
+
+              <select
+                value={province}
+                onChange={(e)=>{
+                  setProvince(e.target.value);
+                  setCity("");
+                }}
+                className="w-full border rounded-lg p-3"
+              >
+
+                <option value="">Choose Province</option>
+
+                {provinces.map((province)=>(
+                  <option
+                    key={province}
+                    value={province}
+                  >
+                    {province}
+                  </option>
+                ))}
+
+              </select>
+
+            </div>
+
+            <div>
+
+              <label>City</label>
+
+              <select
+                value={city}
+                onChange={(e)=>setCity(e.target.value)}
+                className="w-full border rounded-lg p-3"
+              >
+
+                <option value="">Choose City</option>
+
+                {(cities[province] || []).map((city)=>(
+                  <option
+                    key={city}
+                    value={city}
+                  >
+                    {city}
+                  </option>
+                ))}
+
+              </select>
+
+            </div>
+
+            <div>
+
+              <label>Postal Code</label>
+
+              <input
+                value={postalCode}
+                onChange={(e)=>setPostalCode(e.target.value)}
+                className="w-full border rounded-lg p-3"
+              />
+
+            </div>
+
+            <div>
+
+              <label>Address</label>
+
+              <textarea
+                rows={4}
+                value={address}
+                onChange={(e)=>setAddress(e.target.value)}
+                className="w-full border rounded-lg p-3"
+              />
+
+            </div>
+
           </div>
 
           <hr />

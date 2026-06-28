@@ -55,6 +55,19 @@ export default async function OrderDetailPage({ params }: Props) {
 
       </div>
 
+      <div className="bg-white rounded-xl shadow p-6 mb-6">
+        <h2 className="text-xl font-bold mb-4">
+          Shipping Address
+        </h2>
+        <p>{order.receiverName}</p>
+        <p>{order.phone}</p>
+        <p>{order.address}</p>
+        <p>
+          {order.city}, {order.province}
+        </p>
+        <p>{order.postalCode}</p>
+      </div>
+
       <div className="space-y-4">
 
         {order.items.map((item) => (
@@ -84,15 +97,35 @@ export default async function OrderDetailPage({ params }: Props) {
 
       </div>
 
-      <div className="mt-8 bg-white rounded-xl shadow p-6 flex justify-between">
+      <div className="bg-white rounded-xl shadow p-6 mt-6 space-y-3">
 
-        <span className="text-2xl font-bold">
-          Total
-        </span>
+        <div className="flex justify-between">
+          <span>Subtotal</span>
 
-        <span className="text-2xl font-bold text-amber-600">
-          Rp {order.total.toLocaleString("id-ID")}
-        </span>
+          <span>
+            Rp {order.subtotal.toLocaleString("id-ID")}
+          </span>
+        </div>
+
+        <div className="flex justify-between">
+          <span>Shipping Fee</span>
+
+          <span>
+            Rp {order.shippingFee.toLocaleString("id-ID")}
+          </span>
+        </div>
+
+        <hr />
+
+        <div className="flex justify-between font-bold text-xl">
+
+          <span>Total</span>
+
+          <span className="text-amber-600">
+            Rp {order.total.toLocaleString("id-ID")}
+          </span>
+
+        </div>
 
       </div>
 

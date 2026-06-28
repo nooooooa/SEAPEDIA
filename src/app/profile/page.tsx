@@ -46,7 +46,38 @@ export default async function ProfilePage() {
             <label className="text-gray-500 text-sm">Email</label>
             <p className="text-lg font-semibold">{user.email}</p>
           </div>
+          <h2 className="font-semibold mt-8 mb-3">
+            Shipping Address
+          </h2>
 
+          <div className="space-y-2">
+
+          <p>
+            <b>Full Name:</b> {user.fullName ?? "-"}
+          </p>
+
+          <p>
+            <b>Phone:</b> {user.phone ?? "-"}
+          </p>
+
+          <p>
+            <b>Province:</b> {user.province ?? "-"}
+          </p>
+
+          <p>
+            <b>City:</b> {user.city ?? "-"}
+          </p>
+
+          <p>
+            <b>Postal Code:</b> {user.postalCode ?? "-"}
+          </p>
+
+          <p>
+          <b>Address:</b><br/>
+            {user.address ?? "-"}
+          </p>
+
+          </div>
           <div>
             <label className="text-gray-500 text-sm">Role</label>
             <p className="text-lg font-semibold">
