@@ -37,6 +37,23 @@ export default function CartItem({ item }: CartItemProps) {
       alert("Failed to update cart.");
     }
   };
+  const removeItem = async () => {
+  const res = await fetch("/api/cart/remove", {
+    method: "DELETE",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      cartItemId: item.id,
+    }),
+  });
+
+  if (res.ok) {
+    router.refresh();
+  } else {
+    alert("Failed to remove item.");
+  }
+};
 
   return (
     <div className="bg-white rounded-xl shadow p-5 flex justify-between items-center">
@@ -65,6 +82,12 @@ export default function CartItem({ item }: CartItemProps) {
             className="w-8 h-8 rounded-lg border hover:bg-gray-100"
           >
             +
+          </button>
+          <button
+            onClick={removeItem}
+            className="mt-4 text-red-500 hover:text-red-700 text-sm font-medium"
+          >
+            Remove
           </button>
 
         </div>
