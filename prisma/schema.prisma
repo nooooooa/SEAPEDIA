@@ -8,19 +8,25 @@ datasource db {
 }
 
 model User {
-  id        Int        @id @default(autoincrement())
-  username  String     @unique
-  email     String     @unique
-  password  String
-  createdAt DateTime   @default(now())
+  id          Int       @id @default(autoincrement())
+  username    String    @unique
+  email       String    @unique
+  password    String
 
-  products Product[]
+  fullName    String?
+  phone       String?
+  address     String?   @db.Text
+  city        String?
+  postalCode  String?
 
-  cart Cart?
+  createdAt   DateTime  @default(now())
 
-  userRoles UserRole[]
-  orders Order[]
-  reviews Review[]
+  products    Product[]
+  cart        Cart?
+  userRoles   UserRole[]
+  orders      Order[]
+  reviews     Review[]
+
   @@map("user")
 }
 
@@ -91,18 +97,22 @@ model CartItem {
 }
 
 model Order {
-  id         Int         @id @default(autoincrement())
+  id          Int         @id @default(autoincrement())
 
-  userId     Int
-  user       User        @relation(fields: [userId], references: [id])
+  userId      Int
+  user        User        @relation(fields: [userId], references: [id])
 
-  total      Float
+  subtotal    Float       @default(0)
 
-  status     String      @default("Pending")
+  shippingFee Float       @default(0)
 
-  createdAt  DateTime    @default(now())
+  total       Float
 
-  items       OrderItem[]
+  status      String      @default("Pending")
+
+  createdAt   DateTime    @default(now())
+
+  items        OrderItem[]
 
   @@map("order")
 }

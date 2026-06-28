@@ -80,10 +80,17 @@ export default async function CartPage() {
     );
   }
 
-  const total = cart.items.reduce(
-    (sum, item) => sum + item.product.price * item.quantity,
+  const subtotal = cart.items.reduce(
+  (sum, item) => sum + item.product.price * item.quantity,
     0
   );
+
+  const shippingFee =
+    subtotal >= 500000
+      ? 0
+      : 20000;
+
+  const total = subtotal + shippingFee;
 
   const itemCount = cart.items.reduce((sum, item) => sum + item.quantity, 0);
 
@@ -108,29 +115,43 @@ export default async function CartPage() {
       <div className="my-8 border-t border-gray-100" />
 
       {/* Order summary card */}
-      <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6">
-        <h2 className="text-base font-semibold text-gray-500 uppercase tracking-wider mb-5">
+      <div className="bg-white rounded-2xl shadow-lg p-6 mt-8">
+        <h2 className="text-xl font-bold mb-6">
           Order Summary
         </h2>
 
-        <div className="space-y-3">
-          <div className="flex justify-between text-sm text-gray-600">
-            <span>Subtotal ({itemCount} items)</span>
-            <span>Rp {total.toLocaleString("id-ID")}</span>
+        <div className="space-y-4">
+          <div className="flex justify-between">
+            <span>Subtotal</span>
+            <span className="font-semibold">
+              Rp {subtotal.toLocaleString("id-ID")}
+            </span>
           </div>
-        </div>
 
-        <div className="mt-5 pt-5 border-t border-gray-100 flex items-center justify-between">
-          <div>
-            <p className="text-xs text-gray-400 uppercase tracking-wide mb-1">
+          <div className="flex justify-between">
+            <span>Shipping Fee</span>
+            <span className="font-semibold">
+              {shippingFee === 0
+                ? "FREE"
+                : `Rp ${shippingFee.toLocaleString("id-ID")}`}
+            </span>
+          </div>
+
+          <hr />
+
+          <div className="flex justify-between items-center">
+            <h2 className="text-2xl font-bold">
               Total
-            </p>
-            <p className="text-2xl font-bold text-gray-900">
+            </h2>
+
+            <h2 className="text-2xl font-bold text-amber-600">
               Rp {total.toLocaleString("id-ID")}
-            </p>
+            </h2>
           </div>
 
-          <CheckoutButton />
+          <div className="pt-4">
+            <CheckoutButton />
+          </div>
         </div>
       </div>
 
