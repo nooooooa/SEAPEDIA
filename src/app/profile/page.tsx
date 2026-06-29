@@ -43,15 +43,31 @@ export default async function ProfilePage() {
           </div>
           <Link
             href="/profile/wallet"
-            className="bg-white rounded-xl shadow p-5 hover:shadow-lg transition"
+            className="block bg-gradient-to-r from-amber-50 to-yellow-50 border border-amber-200 rounded-xl shadow-md p-5 hover:shadow-lg hover:border-amber-400 transition"
           >
-            <h2 className="text-xl font-bold">
-              My Wallet
-            </h2>
+            <div className="flex justify-between items-center">
 
-            <p className="text-gray-500 mt-2">
-              View balance and top up.
-            </p>
+              <div>
+
+                <h2 className="text-xl font-bold text-[#131921]">
+                  💳 My Wallet
+                </h2>
+
+                <p className="text-gray-500 mt-1">
+                  Balance:
+                </p>
+
+                <p className="text-2xl font-bold text-green-600 mt-2">
+                  Rp {user.wallet.toLocaleString("id-ID")}
+                </p>
+
+              </div>
+
+              <div className="text-3xl">
+                →
+              </div>
+
+            </div>
           </Link>
           <div>
             <label className="text-gray-500 text-sm">Email</label>
