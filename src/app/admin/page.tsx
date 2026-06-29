@@ -135,6 +135,17 @@ export default async function AdminPage() {
             View every customer order.
           </p>
         </Link>
+        <Link
+            href="/admin/reports"
+            className="bg-white rounded-xl shadow p-8 hover:shadow-lg transition">
+            <h2 className="text-2xl font-bold">
+                📈 Sales Report
+            </h2>
+
+            <p className="mt-2 text-gray-500">
+                Marketplace analytics.
+            </p>
+        </Link>
        
       </div>
     </div>
