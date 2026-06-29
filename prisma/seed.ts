@@ -4,11 +4,13 @@ import bcrypt from "bcryptjs";
 const prisma = new PrismaClient();
 
 async function main() {
-  console.log("Starting seed...");
 
-  await prisma.review.deleteMany();
+  console.log("🧹 Cleaning database...");
+
+  await prisma.delivery.deleteMany();
   await prisma.orderItem.deleteMany();
   await prisma.order.deleteMany();
+  await prisma.review.deleteMany();
   await prisma.cartItem.deleteMany();
   await prisma.cart.deleteMany();
   await prisma.product.deleteMany();
@@ -16,17 +18,23 @@ async function main() {
   await prisma.user.deleteMany();
   await prisma.role.deleteMany();
 
-  console.log("Old data deleted");
+  console.log("✅ Database cleaned.");
+
+  // =========================
+  // PASSWORD
+  // =========================
+
+  const password = await bcrypt.hash("admin123", 10);
+
+  // =========================
+  // ROLES
+  // =========================
+
+  console.log("📌 Creating roles...");
 
   const adminRole = await prisma.role.create({
     data: {
       name: "Admin",
-    },
-  });
-
-  const sellerRole = await prisma.role.create({
-    data: {
-      name: "Seller",
     },
   });
 
@@ -36,377 +44,516 @@ async function main() {
     },
   });
 
-  console.log("Roles created");
-
-  const password = await bcrypt.hash("admin123", 10);
-
-  const admin = await prisma.user.create({
+  const sellerRole = await prisma.role.create({
     data: {
-      username: "admin",
-      email: "admin@seapedia.com",
-      password,
-      fullName: "System Administrator",
-      phone: "081111111111",
-      province: "DKI Jakarta",
-      city: "Jakarta Selatan",
-      address: "Jl. Sudirman No.1",
-      postalCode: "12190",
+      name: "Seller",
     },
   });
 
-  const seller1 = await prisma.user.create({
+  const driverRole = await prisma.role.create({
     data: {
-      username: "seller1",
-      email: "seller1@seapedia.com",
-      password,
-      fullName: "Tech Store",
-      phone: "082222222222",
-      province: "DKI Jakarta",
-      city: "Jakarta Barat",
-      address: "Jl. Mangga Besar",
-      postalCode: "11180",
+      name: "Driver",
     },
   });
 
-  const seller2 = await prisma.user.create({
-    data: {
-      username: "seller2",
-      email: "seller2@seapedia.com",
-      password,
-      fullName: "Gaming Center",
-      phone: "083333333333",
-      province: "Jawa Barat",
-      city: "Bandung",
-      address: "Jl. Asia Afrika",
-      postalCode: "40111",
-    },
+  // =========================
+  // HELPER
+  // =========================
+
+  async function createUser(data: {
+    username: string;
+    email: string;
+    roleId: number;
+
+    fullName: string;
+    phone: string;
+
+    province: string;
+    city: string;
+    address: string;
+    postalCode: string;
+
+    wallet: number;
+  }) {
+
+    const user = await prisma.user.create({
+      data: {
+        username: data.username,
+        email: data.email,
+        password,
+
+        fullName: data.fullName,
+        phone: data.phone,
+
+        province: data.province,
+        city: data.city,
+        address: data.address,
+        postalCode: data.postalCode,
+
+        wallet: data.wallet,
+      },
+    });
+
+    await prisma.userRole.create({
+      data: {
+        userId: user.id,
+        roleId: data.roleId,
+      },
+    });
+
+    await prisma.cart.create({
+      data: {
+        userId: user.id,
+      },
+    });
+
+    return user;
+  }
+
+  // =========================
+  // USERS
+  // =========================
+
+  console.log("👤 Creating users...");
+
+  const admin = await createUser({
+    username: "admin",
+    email: "admin@seapedia.com",
+    roleId: adminRole.id,
+
+    fullName: "System Administrator",
+    phone: "081111111111",
+
+    province: "DKI Jakarta",
+    city: "Jakarta",
+    address: "Admin Office",
+    postalCode: "10110",
+
+    wallet: 0,
   });
 
-  const buyer1 = await prisma.user.create({
-    data: {
-      username: "buyer1",
-      email: "buyer1@seapedia.com",
-      password,
-      fullName: "Budi Santoso",
-      phone: "081234567891",
-      province: "Jawa Timur",
-      city: "Surabaya",
-      address: "Jl. Pemuda",
-      postalCode: "60271",
-    },
+  const buyer1 = await createUser({
+    username: "buyer1",
+    email: "buyer1@seapedia.com",
+    roleId: buyerRole.id,
+
+    fullName: "Nicholas Kenneth",
+    phone: "081222222222",
+
+    province: "DKI Jakarta",
+    city: "Jakarta Selatan",
+    address: "Jl. Melati No.1",
+    postalCode: "12120",
+
+    wallet: 5000000,
   });
 
-  const buyer2 = await prisma.user.create({
-    data: {
-      username: "buyer2",
-      email: "buyer2@seapedia.com",
-      password,
-      fullName: "Andi Wijaya",
-      phone: "081234567892",
-      province: "Jawa Tengah",
-      city: "Semarang",
-      address: "Jl. Pandanaran",
-      postalCode: "50134",
-    },
+  const buyer2 = await createUser({
+    username: "buyer2",
+    email: "buyer2@seapedia.com",
+    roleId: buyerRole.id,
+
+    fullName: "Michael Jonathan",
+    phone: "081333333333",
+
+    province: "Banten",
+    city: "Tangerang",
+    address: "Jl. Mawar No.8",
+    postalCode: "15111",
+
+    wallet: 3000000,
   });
 
-  const buyer3 = await prisma.user.create({
-    data: {
-      username: "buyer3",
-      email: "buyer3@seapedia.com",
-      password,
-      fullName: "Cindy Natalia",
-      phone: "081234567893",
-      province: "DI Yogyakarta",
-      city: "Yogyakarta",
-      address: "Jl. Malioboro",
-      postalCode: "55271",
-    },
+  const seller1 = await createUser({
+    username: "seller1",
+    email: "seller1@seapedia.com",
+    roleId: sellerRole.id,
+
+    fullName: "Tech Store",
+    phone: "081444444444",
+
+    province: "DKI Jakarta",
+    city: "Jakarta Barat",
+    address: "Tech Store Building",
+    postalCode: "11510",
+
+    wallet: 0,
   });
 
-  const buyer4 = await prisma.user.create({
-    data: {
-      username: "buyer4",
-      email: "buyer4@seapedia.com",
-      password,
-      fullName: "Kevin Tan",
-      phone: "081234567894",
-      province: "Banten",
-      city: "Tangerang",
-      address: "Jl. BSD Raya",
-      postalCode: "15345",
-    },
+  const seller2 = await createUser({
+    username: "seller2",
+    email: "seller2@seapedia.com",
+    roleId: sellerRole.id,
+
+    fullName: "Gaming Store",
+    phone: "081555555555",
+
+    province: "Jawa Barat",
+    city: "Bandung",
+    address: "Gaming Store Center",
+    postalCode: "40111",
+
+    wallet: 0,
   });
 
-  const buyer5 = await prisma.user.create({
-    data: {
-      username: "buyer5",
-      email: "buyer5@seapedia.com",
-      password,
-      fullName: "Michelle Lim",
-      phone: "081234567895",
-      province: "Bali",
-      city: "Denpasar",
-      address: "Jl. Teuku Umar",
-      postalCode: "80113",
-    },
+  const driver = await createUser({
+    username: "driver",
+    email: "driver@seapedia.com",
+    roleId: driverRole.id,
+
+    fullName: "Delivery Driver",
+    phone: "081666666666",
+
+    province: "DKI Jakarta",
+    city: "Jakarta Timur",
+    address: "Driver House",
+    postalCode: "13420",
+
+    wallet: 0,
   });
 
-  console.log("Users created");
+  console.log("✅ Users created.");
 
-  await prisma.userRole.createMany({
+  // ============================================
+  // PART 2 STARTS HERE
+  // Products + Reviews
+  // ============================================
+    // =========================
+  // PRODUCTS
+  // =========================
+
+  console.log("📦 Creating products...");
+
+  async function createProduct(data: {
+    sellerId: number;
+    name: string;
+    description: string;
+    price: number;
+    stock: number;
+    image: string;
+  }) {
+    return prisma.product.create({
+      data,
+    });
+  }
+
+  // Seller 1
+  const keyboard = await createProduct({
+    sellerId: seller1.id,
+    name: "Mechanical Keyboard",
+    description: "RGB Mechanical Gaming Keyboard",
+    price: 850000,
+    stock: 25,
+    image: "/products/keyboard.jpg",
+  });
+
+  const mouse = await createProduct({
+    sellerId: seller1.id,
+    name: "Logitech G Pro Mouse",
+    description: "Professional Wireless Gaming Mouse",
+    price: 1200000,
+    stock: 20,
+    image: "/products/mouse.jpg",
+  });
+
+  const ssd = await createProduct({
+    sellerId: seller1.id,
+    name: "Samsung SSD 1TB",
+    description: "Fast NVMe SSD Storage",
+    price: 1750000,
+    stock: 15,
+    image: "/products/ssd.jpg",
+  });
+
+  const ram = await createProduct({
+    sellerId: seller1.id,
+    name: "Corsair DDR5 32GB",
+    description: "High Performance Gaming RAM",
+    price: 2200000,
+    stock: 12,
+    image: "/products/ram.jpg",
+  });
+
+  const webcam = await createProduct({
+    sellerId: seller1.id,
+    name: "Logitech HD Webcam",
+    description: "1080P USB Webcam",
+    price: 650000,
+    stock: 18,
+    image: "/products/webcam.jpg",
+  });
+
+  // Seller 2
+  const monitor = await createProduct({
+    sellerId: seller2.id,
+    name: "ASUS Gaming Monitor",
+    description: "27 Inch 165Hz IPS Monitor",
+    price: 3500000,
+    stock: 10,
+    image: "/products/monitor.jpg",
+  });
+
+  const headset = await createProduct({
+    sellerId: seller2.id,
+    name: "HyperX Cloud II",
+    description: "Gaming Headset 7.1 Surround",
+    price: 1200000,
+    stock: 15,
+    image: "/products/headset.jpg",
+  });
+
+  const mic = await createProduct({
+    sellerId: seller2.id,
+    name: "Blue Yeti Microphone",
+    description: "USB Streaming Microphone",
+    price: 2100000,
+    stock: 8,
+    image: "/products/mic.jpg",
+  });
+
+  const chair = await createProduct({
+    sellerId: seller2.id,
+    name: "Gaming Chair",
+    description: "Ergonomic Gaming Chair",
+    price: 2800000,
+    stock: 7,
+    image: "/products/chair.jpg",
+  });
+
+  const router = await createProduct({
+    sellerId: seller2.id,
+    name: "TP-Link WiFi Router",
+    description: "Dual Band WiFi 6 Router",
+    price: 900000,
+    stock: 20,
+    image: "/products/router.jpg",
+  });
+
+  console.log("✅ Products created.");
+
+  // =========================
+  // REVIEWS
+  // =========================
+
+  console.log("⭐ Creating reviews...");
+
+  await prisma.review.createMany({
     data: [
-      { userId: admin.id, roleId: adminRole.id },
-      { userId: seller1.id, roleId: sellerRole.id },
-      { userId: seller2.id, roleId: sellerRole.id },
-      { userId: buyer1.id, roleId: buyerRole.id },
-      { userId: buyer2.id, roleId: buyerRole.id },
-      { userId: buyer3.id, roleId: buyerRole.id },
-      { userId: buyer4.id, roleId: buyerRole.id },
-      { userId: buyer5.id, roleId: buyerRole.id },
+      {
+        userId: buyer1.id,
+        productId: keyboard.id,
+        rating: 5,
+        comment: "Excellent keyboard, very comfortable.",
+      },
+      {
+        userId: buyer1.id,
+        productId: mouse.id,
+        rating: 4,
+        comment: "Smooth and responsive.",
+      },
+      {
+        userId: buyer2.id,
+        productId: monitor.id,
+        rating: 5,
+        comment: "Amazing display quality.",
+      },
+      {
+        userId: buyer2.id,
+        productId: headset.id,
+        rating: 4,
+        comment: "Comfortable for long gaming sessions.",
+      },
     ],
   });
 
-  console.log("User roles created");
+  console.log("✅ Reviews created.");
 
-  await prisma.product.createMany({
-    data: [
-      {
-        name: "Mechanical Keyboard RK84",
-        description: "75% Mechanical Keyboard RGB Hot Swap.",
-        price: 899000,
-        stock: 35,
-        image: "/products/keyboard.jpg",
-        sellerId: seller1.id,
-      },
-      {
-        name: "Gaming Mouse Logitech G304",
-        description: "Wireless Gaming Mouse HERO Sensor.",
-        price: 429000,
-        stock: 50,
-        image: "/products/mouse.jpg",
-        sellerId: seller1.id,
-      },
-      {
-        name: "USB Hub 4 Port",
-        description: "USB 3.0 High Speed Hub.",
-        price: 149000,
-        stock: 80,
-        image: "/products/hub.jpg",
-        sellerId: seller1.id,
-      },
-      {
-        name: "SSD Samsung 990 EVO 1TB",
-        description: "NVMe SSD Gen4.",
-        price: 1699000,
-        stock: 20,
-        image: "/products/ssd.jpg",
-        sellerId: seller1.id,
-      },
-      {
-        name: "Corsair DDR5 32GB",
-        description: "DDR5 6000MHz RAM.",
-        price: 1899000,
-        stock: 18,
-        image: "/products/ram.jpg",
-        sellerId: seller1.id,
-      },
-      {
-        name: "Logitech C920 Webcam",
-        description: "Full HD Webcam.",
-        price: 1099000,
-        stock: 25,
-        image: "/products/webcam.jpg",
-        sellerId: seller1.id,
-      },
-      {
-        name: "Laptop Stand Aluminum",
-        description: "Adjustable Aluminum Stand.",
-        price: 249000,
-        stock: 40,
-        image: "/products/stand.jpg",
-        sellerId: seller1.id,
-      },
-      {
-        name: "Bluetooth Speaker JBL",
-        description: "Portable Speaker.",
-        price: 799000,
-        stock: 22,
-        image: "/products/speaker.jpg",
-        sellerId: seller1.id,
-      },
-      {
-        name: "Power Bank 20000mAh",
-        description: "Fast Charging Power Bank.",
-        price: 499000,
-        stock: 35,
-        image: "/products/powerbank.jpg",
-        sellerId: seller1.id,
-      },
-      {
-        name: "HDMI Cable 2 Meter",
-        description: "HDMI 2.1 Cable.",
-        price: 89000,
-        stock: 100,
-        image: "/products/hdmi.jpg",
-        sellerId: seller1.id,
-      },
-      {
-        name: "Gaming Headset HyperX",
-        description: "7.1 Surround Gaming Headset.",
-        price: 999000,
-        stock: 20,
-        image: "/products/headset.jpg",
-        sellerId: seller2.id,
-      },
-      {
-        name: "Blue Yeti Microphone",
-        description: "USB Condenser Microphone.",
-        price: 1999000,
-        stock: 12,
-        image: "/products/mic.jpg",
-        sellerId: seller2.id,
-      },
-      {
-        name: "Cooling Pad Laptop",
-        description: "5 Fan Cooling Pad.",
-        price: 289000,
-        stock: 28,
-        image: "/products/coolingpad.jpg",
-        sellerId: seller2.id,
-      },
-      {
-        name: "Mouse Pad XL",
-        description: "Large Gaming Mouse Pad.",
-        price: 99000,
-        stock: 60,
-        image: "/products/mousepad.jpg",
-        sellerId: seller2.id,
-      },
-      {
-        name: "24 Inch IPS Monitor",
-        description: "Full HD IPS Monitor.",
-        price: 2299000,
-        stock: 15,
-        image: "/products/monitor.jpg",
-        sellerId: seller2.id,
-      },
-      {
-        name: "Flashdisk 128GB",
-        description: "USB 3.2 Flashdisk.",
-        price: 179000,
-        stock: 70,
-        image: "/products/flashdisk.jpg",
-        sellerId: seller2.id,
-      },
-      {
-        name: "Laptop Backpack",
-        description: "Water Resistant Backpack.",
-        price: 349000,
-        stock: 30,
-        image: "/products/backpack.jpg",
-        sellerId: seller2.id,
-      },
-      {
-        name: "Wireless Charger",
-        description: "15W Fast Wireless Charger.",
-        price: 259000,
-        stock: 40,
-        image: "/products/charger.jpg",
-        sellerId: seller2.id,
-      },
-      {
-        name: "External HDD 2TB",
-        description: "Portable Hard Drive.",
-        price: 1499000,
-        stock: 16,
-        image: "/products/hdd.jpg",
-        sellerId: seller2.id,
-      },
-      {
-        name: "WiFi 6 Router",
-        description: "Dual Band WiFi 6 Router.",
-        price: 899000,
-        stock: 18,
-        image: "/products/router.jpg",
-        sellerId: seller2.id,
-      },
-    ],
-  });
+  // ============================================
+  // PART 3 STARTS HERE
+  // Orders + OrderItems + Delivery
+  // ============================================
+    // =========================
+  // ORDERS
+  // =========================
 
-  console.log("Products created");
+  console.log("🛒 Creating orders...");
 
-  const allProducts = await prisma.product.findMany({
-    orderBy: { id: "asc" },
-  });
+  async function createOrder(data: {
+    buyer: typeof buyer1;
+    product: typeof keyboard;
+    quantity: number;
+    status: string;
+    driverAssigned: boolean;
+    delivered: boolean;
+  }) {
 
-  const buyers = [buyer1, buyer2, buyer3, buyer4, buyer5];
+    const subtotal = data.product.price * data.quantity;
+    const shippingFee = subtotal >= 500000 ? 0 : 20000;
+    const total = subtotal + shippingFee;
 
-  const comments = [
-    "Excellent product!",
-    "Very recommended.",
-    "Packaging was neat.",
-    "Works perfectly.",
-    "Good quality.",
-    "Fast shipping.",
-    "Worth the price.",
-    "Exactly as described.",
-    "Five stars!",
-    "Satisfied with my purchase.",
-  ];
+    const order = await prisma.order.create({
+      data: {
+        userId: data.buyer.id,
 
-  for (let i = 0; i < 30; i++) {
-    const buyer = buyers[i % buyers.length];
+        receiverName: data.buyer.fullName!,
+        phone: data.buyer.phone!,
+        province: data.buyer.province!,
+        city: data.buyer.city!,
+        address: data.buyer.address!,
+        postalCode: data.buyer.postalCode!,
 
-    await prisma.review
-      .create({
+        subtotal,
+        shippingFee,
+        total,
+
+        status: data.status,
+      },
+    });
+
+    await prisma.orderItem.create({
+      data: {
+        orderId: order.id,
+        productId: data.product.id,
+        quantity: data.quantity,
+        price: data.product.price,
+      },
+    });
+
+    await prisma.product.update({
+      where: {
+        id: data.product.id,
+      },
+      data: {
+        stock: {
+          decrement: data.quantity,
+        },
+      },
+    });
+
+    if (data.status !== "Pending") {
+
+      await prisma.delivery.create({
         data: {
-          userId: buyer.id,
-          productId: allProducts[i % allProducts.length].id,
-          rating: 4 + (i % 2),
-          comment: comments[i % comments.length],
+          orderId: order.id,
+
+          driverId: data.driverAssigned
+            ? driver.id
+            : null,
+
+          earning: shippingFee * 0.75,
+
+          status:
+            data.status === "Completed"
+              ? "Completed"
+              : data.status,
+
+          acceptedAt: data.driverAssigned
+            ? new Date()
+            : null,
+
+          deliveredAt: data.delivered
+            ? new Date()
+            : null,
         },
-      })
-      .catch(() => {});
+      });
+
+    }
+
+    return order;
   }
 
-  console.log("Reviews created");
+  // =========================
+  // CREATE ORDERS
+  // =========================
 
-  for (const buyer of buyers) {
-    const cart = await prisma.cart.create({
-      data: {
-        userId: buyer.id,
-      },
-    });
+  await createOrder({
+    buyer: buyer1,
+    product: keyboard,
+    quantity: 1,
+    status: "Completed",
+    driverAssigned: true,
+    delivered: true,
+  });
 
-    await prisma.cartItem.create({
-      data: {
-        cartId: cart.id,
-        productId: allProducts[buyer.id % allProducts.length].id,
-        quantity: 1,
-      },
-    });
+  await createOrder({
+    buyer: buyer1,
+    product: monitor,
+    quantity: 1,
+    status: "On Delivery",
+    driverAssigned: true,
+    delivered: false,
+  });
 
-    await prisma.cartItem.create({
-      data: {
-        cartId: cart.id,
-        productId: allProducts[(buyer.id + 5) % allProducts.length].id,
-        quantity: 2,
-      },
-    });
-  }
-    const driverRole = await prisma.role.upsert({
-        where: {
-            name: "Driver",
-        },
-        update: {},
-        create: {
-            name: "Driver",
-        },
-    });
-    
-  console.log("Carts created");
-  console.log("Seed Finished!");
+  await createOrder({
+    buyer: buyer2,
+    product: headset,
+    quantity: 1,
+    status: "Waiting Driver",
+    driverAssigned: false,
+    delivered: false,
+  });
+
+  await createOrder({
+    buyer: buyer2,
+    product: mouse,
+    quantity: 2,
+    status: "Pending",
+    driverAssigned: false,
+    delivered: false,
+  });
+
+  console.log("✅ Orders created.");
+
+  // =========================
+  // UPDATE WALLET DEMO
+  // =========================
+
+  await prisma.user.update({
+    where: {
+      id: buyer1.id,
+    },
+    data: {
+      wallet: 2950000,
+    },
+  });
+
+  await prisma.user.update({
+    where: {
+      id: buyer2.id,
+    },
+    data: {
+      wallet: 580000,
+    },
+  });
+
+  await prisma.user.update({
+    where: {
+      id: seller1.id,
+    },
+    data: {
+      wallet: 765000,
+    },
+  });
+
+  await prisma.user.update({
+    where: {
+      id: seller2.id,
+    },
+    data: {
+      wallet: 3150000,
+    },
+  });
+
+  await prisma.user.update({
+    where: {
+      id: driver.id,
+    },
+    data: {
+      wallet: 15000,
+    },
+  });
+
+  console.log("Seed Complete");
 }
 
 main()
@@ -418,4 +565,3 @@ main()
     await prisma.$disconnect();
     process.exit(1);
   });
-

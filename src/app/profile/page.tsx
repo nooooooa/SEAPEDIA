@@ -41,7 +41,18 @@ export default async function ProfilePage() {
             <label className="text-gray-500 text-sm">Username</label>
             <p className="text-lg font-semibold">{user.username}</p>
           </div>
+          <Link
+            href="/profile/wallet"
+            className="bg-white rounded-xl shadow p-5 hover:shadow-lg transition"
+          >
+            <h2 className="text-xl font-bold">
+              My Wallet
+            </h2>
 
+            <p className="text-gray-500 mt-2">
+              View balance and top up.
+            </p>
+          </Link>
           <div>
             <label className="text-gray-500 text-sm">Email</label>
             <p className="text-lg font-semibold">{user.email}</p>

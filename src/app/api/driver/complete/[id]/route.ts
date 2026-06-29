@@ -48,27 +48,67 @@ export async function POST(
     }
 
     await prisma.$transaction(async (tx) => {
+        await tx.delivery.update({
+            where: {
+            id: delivery.id,
+            },
+            data: {
+            status: "Completed",
+            deliveredAt: new Date(),
+            },
+        });
 
-      await tx.delivery.update({
-        where: {
-          id: delivery.id,
-        },
-        data: {
-          status: "Completed",
-          deliveredAt: new Date(),
-        },
-      });
+        await tx.order.update({
+            where: {
+            id: delivery.orderId,
+            },
+            data: {
+            status: "Completed",
+            },
+        });
 
-      await tx.order.update({
-        where: {
-          id: delivery.orderId,
-        },
-        data: {
-          status: "Completed",
-        },
-      });
+        // Driver menerima earning
+        await tx.user.update({
+            where: {
+            id: delivery.driverId!,
+            },
+            data: {
+            wallet: {
+                increment: delivery.earning,
+            },
+            },
+        });
 
-    });
+        // Ambil seluruh item order beserta seller
+        const orderItems = await tx.orderItem.findMany({
+            where: {
+            orderId: delivery.orderId,
+            },
+            include: {
+            product: true,
+            },
+        });
+
+        // Seller menerima 90%
+        for (const item of orderItems) {
+
+            const sellerIncome =
+            item.price * item.quantity * 0.9;
+
+            await tx.user.update({
+            where: {
+                id: item.product.sellerId,
+            },
+            data: {
+                wallet: {
+                increment: sellerIncome,
+                },
+            },
+            });
+
+        }
+
+        });
 
     return NextResponse.redirect(
       new URL("/driver/history", req.url)

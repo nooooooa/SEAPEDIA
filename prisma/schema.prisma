@@ -11,30 +11,30 @@ model User {
   id Int @id @default(autoincrement())
 
   username String @unique
-  email    String @unique
+  email String @unique
   password String
 
   fullName String?
-  phone    String?
+  phone String?
 
-  province   String?
-  city       String?
-  address    String? @db.Text
+  province String?
+  city String?
+  address String? @db.Text
   postalCode String?
+
+  wallet Float @default(0)
 
   createdAt DateTime @default(now())
 
-  products  Product[]
-  cart      Cart?
+  products Product[]
+  cart Cart?
   userRoles UserRole[]
-  orders    Order[]
-  reviews   Review[]
-
+  orders Order[]
+  reviews Review[]
   deliveries Delivery[] @relation("DriverDeliveries")
 
   @@map("user")
 }
-
 model Role {
   id   Int    @id @default(autoincrement())
   name String @unique

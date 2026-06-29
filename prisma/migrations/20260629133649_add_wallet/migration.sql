@@ -1,0 +1,2 @@
+-- AlterTable
+ALTER TABLE `user` ADD COLUMN `wallet` DOUBLE NOT NULL DEFAULT 0;
