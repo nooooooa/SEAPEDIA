@@ -147,7 +147,7 @@ export default function Navbar() {
                   <span className="font-semibold">
                     {session.user?.name}
                   </span>
-
+                  
                   <span className="text-xs text-gray-500">
                     {session.user?.roles?.[0]}
                   </span>
@@ -168,6 +168,17 @@ export default function Navbar() {
               </DropdownMenuItem>
 
               <DropdownMenuSeparator />
+              {session.user?.roles?.includes("Seller") && (
+                <>
+                  <DropdownMenuSeparator />
+
+                  <DropdownMenuItem asChild>
+                    <Link href="/seller">
+                      Seller Dashboard
+                    </Link>
+                  </DropdownMenuItem>
+                </>
+              )}
               <DropdownMenuSeparator />
 
               <DropdownMenuItem

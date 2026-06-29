@@ -6,7 +6,7 @@ import { useRouter } from "next/navigation";
 
 export default function RegisterPage() {
   const router = useRouter();
-
+  const [isSeller, setIsSeller] = useState(false);
   const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -43,6 +43,7 @@ export default function RegisterPage() {
         username,
         email,
         password,
+        isSeller,
       }),
     });
 
@@ -144,6 +145,18 @@ export default function RegisterPage() {
               {success}
             </p>
           )}
+          <div className="flex items-center gap-2">
+            <input
+              id="seller"
+              type="checkbox"
+              checked={isSeller}
+              onChange={(e) => setIsSeller(e.target.checked)}
+            />
+
+            <label htmlFor="seller">
+              Register as Seller
+            </label>
+          </div>
           <button
             type="submit"
             disabled={loading}
