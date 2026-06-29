@@ -83,17 +83,27 @@ export async function POST() {
 
     const total = subtotal + shippingFee;
 
-    const order = await prisma.order.create({
+    // Ambil data user terlebih dahulu
+    await prisma.$transaction(async (tx) => {
+    const order = await tx.order.create({
       data: {
         userId,
+
         subtotal,
         shippingFee,
         total,
+
+        receiverName: user.fullName!,
+        phone: user.phone!,
+        province: user.province!,
+        city: user.city!,
+        address: user.address!,
+        postalCode: user.postalCode!,
       },
     });
 
     for (const item of cart.items) {
-      await prisma.orderItem.create({
+      await tx.orderItem.create({
         data: {
           orderId: order.id,
           productId: item.productId,
@@ -102,8 +112,7 @@ export async function POST() {
         },
       });
 
-      // Kurangi stok
-      await prisma.product.update({
+      await tx.product.update({
         where: {
           id: item.productId,
         },
@@ -115,12 +124,12 @@ export async function POST() {
       });
     }
 
-    // Kosongkan cart
-    await prisma.cartItem.deleteMany({
+    await tx.cartItem.deleteMany({
       where: {
         cartId: cart.id,
       },
     });
+  });
 
     return NextResponse.json({
       message: "Checkout success.",
