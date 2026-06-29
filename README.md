@@ -28,7 +28,7 @@ SEAPEDIA is a software project developed to support the SeaPedia application and
 
    ```bash
    # Example command, adjust to actual project entrypoint
-   python main.py
+   npm run dev
    ```
 
 ## Features

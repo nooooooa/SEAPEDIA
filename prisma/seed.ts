@@ -395,7 +395,16 @@ async function main() {
       },
     });
   }
-
+    const driverRole = await prisma.role.upsert({
+        where: {
+            name: "Driver",
+        },
+        update: {},
+        create: {
+            name: "Driver",
+        },
+    });
+    
   console.log("Carts created");
   console.log("Seed Finished!");
 }
@@ -409,3 +418,4 @@ main()
     await prisma.$disconnect();
     process.exit(1);
   });
+

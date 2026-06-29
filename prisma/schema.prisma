@@ -30,6 +30,8 @@ model User {
   orders    Order[]
   reviews   Review[]
 
+  deliveries Delivery[] @relation("DriverDeliveries")
+
   @@map("user")
 }
 
@@ -108,28 +110,26 @@ model Order {
   id Int @id @default(autoincrement())
 
   userId Int
-
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
-
-  subtotal Float @default(0)
+  user   User @relation(fields: [userId], references: [id])
 
   receiverName String
   phone        String
+  province     String
+  city         String
+  address      String @db.Text
+  postalCode   String
 
-  province   String
-  city       String
-  address    String @db.Text
-  postalCode String
-
-  shippingFee Float @default(0)
-
-  total Float
+  subtotal    Float
+  shippingFee Float
+  total       Float
 
   status String @default("Pending")
 
   createdAt DateTime @default(now())
 
   items OrderItem[]
+
+  delivery Delivery?
 
   @@map("order")
 }
@@ -168,4 +168,25 @@ model Review {
 
   @@unique([userId, productId])
   @@map("review")
+}
+
+model Delivery {
+  id Int @id @default(autoincrement())
+
+  orderId  Int  @unique
+  driverId Int?
+
+  status  String @default("Waiting Driver")
+  earning Float  @default(0)
+
+  acceptedAt  DateTime?
+  deliveredAt DateTime?
+
+  createdAt DateTime @default(now())
+
+  order Order @relation(fields: [orderId], references: [id])
+
+  driver User? @relation("DriverDeliveries", fields: [driverId], references: [id])
+
+  @@map("delivery")
 }
