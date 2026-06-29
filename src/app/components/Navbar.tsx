@@ -179,8 +179,16 @@ export default function Navbar() {
                   </DropdownMenuItem>
                 </>
               )}
+              {session.user?.roles?.includes("Admin") && (
+                <DropdownMenuItem asChild>
+                  <Link href="/admin">
+                    Admin Dashboard
+                  </Link>
+                </DropdownMenuItem>
+              )}
               <DropdownMenuSeparator />
-
+              
+              
               <DropdownMenuItem
                 onClick={() => signOut({ callbackUrl: "/" })}
                 className="text-red-500 cursor-pointer"
