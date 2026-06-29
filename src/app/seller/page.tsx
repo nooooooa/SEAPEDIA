@@ -98,6 +98,13 @@ export default async function SellerDashboard() {
             View incoming orders.
           </p>
         </Link>
+        <Link
+          href="/"
+          className="text-amber-600 hover:underline"
+        >
+          ← Back to Home
+        </Link>
+
       </div>
     </div>
   );

@@ -440,7 +440,7 @@ async function main() {
             ? driver.id
             : null,
 
-          earning: shippingFee * 0.75,
+          earning: 20000,
 
           status:
             data.status === "Completed"
@@ -553,7 +553,37 @@ async function main() {
     },
   });
 
-  console.log("Seed Complete");
+    console.log("💰 Wallet updated.");
+
+    console.log("================================");
+    console.log("🎉 SEAPEDIA Seed Completed");
+    console.log("================================");
+
+    console.log("Admin");
+    console.log("admin@seapedia.com");
+    console.log("admin123");
+
+    console.log("");
+
+    console.log("Buyer");
+    console.log("buyer1@seapedia.com");
+    console.log("buyer2@seapedia.com");
+
+    console.log("");
+
+    console.log("Seller");
+    console.log("seller1@seapedia.com");
+    console.log("seller2@seapedia.com");
+
+    console.log("");
+
+    console.log("Driver");
+    console.log("driver@seapedia.com");
+
+    console.log("");
+
+    console.log("Password:");
+    console.log("admin123");
 }
 
 main()

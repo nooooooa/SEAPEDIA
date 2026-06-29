@@ -121,6 +121,12 @@ export default async function DriverDashboard() {
             View completed deliveries.
           </p>
         </Link>
+        <Link
+          href="/"
+          className="text-amber-600 hover:underline"
+        >
+          ← Back to Home
+        </Link>
 
       </div>
     </div>

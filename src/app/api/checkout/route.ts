@@ -90,10 +90,12 @@ export async function POST() {
         sum + item.product.price * item.quantity,
       0
     );
-
     // Shipping
     const shippingFee =
       subtotal >= 500000 ? 0 : 20000;
+
+    // Driver selalu dibayar Rp20.000
+    const driverFee = 20000;
 
     const total = subtotal + shippingFee;
 
@@ -145,7 +147,7 @@ export async function POST() {
     await prisma.delivery.create({
       data: {
         orderId: order.id,
-        earning: shippingFee * 0.75,
+        earning: driverFee,
       },
     });
 

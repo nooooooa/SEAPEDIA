@@ -179,6 +179,13 @@ export default function Navbar() {
                   </DropdownMenuItem>
                 </>
               )}
+              {session.user?.roles?.includes("Driver") && (
+                <DropdownMenuItem asChild>
+                  <Link href="/driver">
+                    Driver Dashboard
+                  </Link>
+                </DropdownMenuItem>
+              )}
               {session.user?.roles?.includes("Admin") && (
                 <DropdownMenuItem asChild>
                   <Link href="/admin">

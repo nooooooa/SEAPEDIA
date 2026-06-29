@@ -70,12 +70,12 @@ export async function POST(
         // Driver menerima earning
         await tx.user.update({
             where: {
-            id: delivery.driverId!,
+                id: delivery.driverId!,
             },
             data: {
-            wallet: {
-                increment: delivery.earning,
-            },
+                wallet: {
+                    increment: delivery.earning,
+                },
             },
         });
 
